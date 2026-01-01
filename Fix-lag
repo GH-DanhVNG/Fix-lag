@@ -1,0 +1,74 @@
+
+local decalsyeeted = true
+local g = game
+local w = g.Workspace
+local l = g.Lighting
+local t = w.Terrain
+
+-- Exibe "VitorYT00" por 10 segundos
+local ScreenGui = Instance.new("ScreenGui")
+local TextLabel = Instance.new("TextLabel")
+ScreenGui.Parent = game:GetService("CoreGui")
+TextLabel.Parent = ScreenGui
+TextLabel.Size = UDim2.new(0, 400, 0, 50)
+TextLabel.Position = UDim2.new(0.5, -200, 0.5, -25)
+TextLabel.Text = "VitorYT00"
+TextLabel.FontSize = Enum.FontSize.Size24
+TextLabel.TextColor3 = Color3.new(1, 1, 1)
+TextLabel.BackgroundTransparency = 1
+wait(10)
+TextLabel:Destroy()
+ScreenGui:Destroy()
+
+-- Define a cor do céu para ciano
+l.Ambient = Color3.new(0, 1, 1) -- Ciano
+
+-- Desativa efeitos de água
+t.WaterWaveSize = 0
+t.WaterWaveSpeed = 0
+t.WaterReflectance = 0
+t.WaterTransparency = 0
+
+-- Desativa efeitos de iluminação
+l.GlobalShadows = false
+l.FogEnd = 9e9
+l.Brightness = 0
+
+-- Define a qualidade de renderização para o nível mais baixo
+settings().Rendering.QualityLevel = "Level01"
+
+-- Desativa efeitos visuais em objetos
+for i,v in pairs(g:GetDescendants()) do
+    if v:IsA("Part") or v:IsA("Union") or v:IsA("MeshPart") or v:IsA("CornerWedgePart") or v:IsA("TrussPart") then
+        v.Material = "Plastic"
+        v.Reflectance = 0
+        if v.Color == Color3.new(1, 0, 0) then -- Vermelho
+            v.Color = Color3.new(0, 1, 1) -- Azul ciano
+        end
+    elseif v:IsA("Decal") and decalsyeeted then
+        v.Transparency = 1
+    elseif v:IsA("ParticleEmitter") or v:IsA("Trail") then
+        v.Enabled = false -- Desativa partículas (fumaça)
+    elseif v:IsA("Explosion") then
+        v.BlastPressure = 1
+        v.BlastRadius = 1
+    end
+end
+
+-- Desativa efeitos de pós-processamento
+for i,e in pairs(l:GetChildren()) do
+    if e:IsA("BlurEffect") or e:IsA("SunRaysEffect") or e:IsA("ColorCorrectionEffect") or e:IsA("BloomEffect") or e:IsA("DepthOfFieldEffect") then
+        e.Enabled = false
+    end
+end
+
+-- Função para fazer o jogador sumir após morrer
+game:GetService("Players").PlayerAdded:Connect(function(player)
+    player.CharacterAdded:Connect(function(character)
+        character:WaitForChild("Humanoid").Died:Connect(function()
+            character.Transparency = 1
+            wait(5) -- Tempo para o jogador respawnar
+            character.Transparency = 0
+        end)
+    end)
+end)
